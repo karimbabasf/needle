@@ -1,0 +1,52 @@
+{
+  "answer": {
+    "features": [
+      "share",
+      "margin",
+      "votes",
+      "answered",
+      "entropy",
+      "spread",
+      "strict",
+      "length",
+      "leaked",
+      "numeric",
+      "slipped"
+    ],
+    "weights": [
+      1.2652,
+      3.7275,
+      0.6639,
+      2.0486,
+      -0.3286,
+      -0.57,
+      -3.6029,
+      2.2182,
+      0.9383,
+      0.3625,
+      2.9856
+    ],
+    "bias": -0.2259
+  },
+  "code": {
+    "features": [
+      "share",
+      "margin",
+      "votes",
+      "passrate",
+      "spread",
+      "flaky",
+      "length"
+    ],
+    "weights": [
+      3.0,
+      1.0,
+      0.0,
+      2.0,
+      0.0,
+      -2.0,
+      0.0
+    ],
+    "bias": -1.0
+  }
+}

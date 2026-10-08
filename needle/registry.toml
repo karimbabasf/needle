@@ -1,0 +1,165 @@
+# The registry: every strategy needle can run, filed by kind of problem and how hard it is.
+# The router looks up one row and runs it. Edit a row or add one; nothing else changes.
+#
+# probe:  samples drawn first to measure how hard the problem is
+# levels: probe score cut-offs for easy, medium, hard (below the last one is extreme)
+# strategy: vote (most common answer), cluster (pass the tests, then group programs by behaviour),
+#           first-pass (stop at the first sample the checker accepts), medoid (the most typical text)
+# batch:  samples per round      cap: most samples the strategy may spend
+# stop:   vote stops once the leader is this likely to stay the leader
+# enough: cluster stops once the biggest group of passing programs has this many members
+# fix:    extra samples the fixer may spend when the checker flags the result
+# trust:  the checker flags any answer it rates below this
+# normal: what a healthy result looks like for this row; the checker flags anything worse
+
+[answer]
+probe = 4
+levels = [0.75, 0.5, 0.25]
+
+[answer.easy]
+strategy = "vote"
+batch = 4
+cap = 8
+stop = 0.95
+fix = 0
+trust = 0.6
+normal = { share = 0.6 }
+
+[answer.medium]
+strategy = "vote"
+batch = 8
+cap = 16
+stop = 0.95
+fix = 0
+trust = 0.5
+normal = { share = 0.4 }
+
+[answer.hard]
+strategy = "vote"
+batch = 16
+cap = 128
+stop = 0.95
+fix = 0
+trust = 0.4
+normal = { share = 0.2 }
+
+[answer.extreme]
+strategy = "vote"
+batch = 16
+cap = 128
+stop = 0.95
+fix = 0
+trust = 0.3
+normal = { share = 0.1 }
+
+[code]
+probe = 16
+levels = [0.5, 0.125, 0.0625]
+
+[code.easy]
+strategy = "cluster"
+batch = 16
+cap = 64
+enough = 4
+fix = 64
+trust = 0.5
+normal = { clusters = 2 }
+
+[code.medium]
+strategy = "cluster"
+batch = 32
+cap = 256
+enough = 4
+fix = 128
+trust = 0.5
+normal = { clusters = 3 }
+
+[code.hard]
+strategy = "cluster"
+batch = 64
+cap = 512
+enough = 3
+fix = 256
+trust = 0.5
+normal = { clusters = 4 }
+
+[code.extreme]
+strategy = "cluster"
+batch = 64
+cap = 1024
+enough = 2
+fix = 0
+trust = 0.5
+normal = { clusters = 4 }
+
+[checked]
+probe = 8
+levels = [0.5, 0.125, 0.01]
+
+[checked.easy]
+strategy = "first-pass"
+batch = 8
+cap = 64
+fix = 0
+trust = 0.5
+normal = {}
+
+[checked.medium]
+strategy = "first-pass"
+batch = 16
+cap = 256
+fix = 0
+trust = 0.5
+normal = {}
+
+[checked.hard]
+strategy = "first-pass"
+batch = 64
+cap = 1024
+fix = 0
+trust = 0.5
+normal = {}
+
+[checked.extreme]
+strategy = "first-pass"
+batch = 64
+cap = 4096
+fix = 0
+trust = 0.5
+normal = {}
+
+[open]
+probe = 4
+levels = [0.5, 0.3, 0.15]
+
+[open.easy]
+strategy = "medoid"
+batch = 4
+cap = 4
+fix = 0
+trust = 0.0
+normal = { agreement = 0.3 }
+
+[open.medium]
+strategy = "medoid"
+batch = 4
+cap = 8
+fix = 4
+trust = 0.0
+normal = { agreement = 0.2 }
+
+[open.hard]
+strategy = "medoid"
+batch = 8
+cap = 16
+fix = 8
+trust = 0.0
+normal = { agreement = 0.1 }
+
+[open.extreme]
+strategy = "medoid"
+batch = 8
+cap = 16
+fix = 8
+trust = 0.0
+normal = { agreement = 0.05 }

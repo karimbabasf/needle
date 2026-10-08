@@ -1,0 +1,64 @@
+{
+ "0": {
+  "answer": {
+   "features": [
+    "share",
+    "margin",
+    "votes",
+    "answered",
+    "entropy",
+    "spread",
+    "strict",
+    "length",
+    "leaked",
+    "numeric",
+    "slipped"
+   ],
+   "weights": [
+    2.5054,
+    3.131,
+    0.9867,
+    2.1013,
+    -0.4224,
+    0.0218,
+    1.5093,
+    0.8467,
+    1.3745,
+    1.5431,
+    4.518
+   ],
+   "bias": -7.391
+  }
+ },
+ "1": {
+  "answer": {
+   "features": [
+    "share",
+    "margin",
+    "votes",
+    "answered",
+    "entropy",
+    "spread",
+    "strict",
+    "length",
+    "leaked",
+    "numeric",
+    "slipped"
+   ],
+   "weights": [
+    0.6558,
+    4.0566,
+    -0.1105,
+    0.3926,
+    0.1198,
+    -1.8966,
+    -5.3614,
+    3.3341,
+    0.6832,
+    0.0705,
+    2.0938
+   ],
+   "bias": 4.1836
+  }
+ }
+}
