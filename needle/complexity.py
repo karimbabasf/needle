@@ -7,10 +7,14 @@ answer: share of the most common answer. code, checked: share that pass. open: w
 from . import router
 from .strategies import Run, agreement
 
+# Below this share of samples stating an answer, the prompt is free text. Kept low on purpose:
+# long math solutions often run out of room before the final line, and that is not free text.
+NO_ANSWER = 0.25
+
 
 def measure(run: Run, registry: str | None = None) -> str:
     run.draw(router.registry(registry)[run.kind]["probe"])
-    if run.kind == "answer" and run.answered() < len(run.samples) / 2:
+    if run.kind == "answer" and run.answered() < NO_ANSWER * len(run.samples):
         run.kind = "open"  # the samples state no answer, so read them as free text
         run.refresh()
         run.fixes.append("samples state no final answer: read as open text")

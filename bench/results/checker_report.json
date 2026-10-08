@@ -8,5 +8,15 @@
   "rows": 23206,
   "auroc": 0.8984,
   "base rate": 0.5355
+ },
+ "code trained on half 0": {
+  "rows": 11219,
+  "auroc": 0.7263,
+  "base rate": 0.3538
+ },
+ "code trained on half 1": {
+  "rows": 14781,
+  "auroc": 0.6636,
+  "base rate": 0.4899
  }
 }

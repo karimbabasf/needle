@@ -17,6 +17,7 @@ import re
 from pathlib import Path
 
 from . import sandbox
+from .complexity import NO_ANSWER
 from .strategies import Candidate, Run, agreement
 from .task import Result
 
@@ -75,7 +76,7 @@ def check(run: Run) -> list[str]:
     normal, trust = run.row.get("normal", {}), run.row.get("trust", 0.5)
     flags = []
     if run.kind == "answer":
-        if top is None or run.answered() < len(run.samples) / 2:
+        if top is None or run.answered() < NO_ANSWER * len(run.samples):
             return ["no_answer"]
         if len(top.members) / sum(len(c.members) for c in cands) < normal.get("share", 0.0):
             flags.append("split")  # the vote is weaker than this row expects

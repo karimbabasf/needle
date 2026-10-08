@@ -28,6 +28,27 @@
     3.7264
    ],
    "bias": -8.0568
+  },
+  "code": {
+   "features": [
+    "share",
+    "margin",
+    "votes",
+    "passrate",
+    "spread",
+    "flaky",
+    "length"
+   ],
+   "weights": [
+    1.906,
+    -0.6038,
+    0.8274,
+    3.0925,
+    0.3093,
+    0.0,
+    1.1504
+   ],
+   "bias": -2.0675
   }
  },
  "1": {
@@ -59,6 +80,27 @@
     1.489
    ],
    "bias": 1.511
+  },
+  "code": {
+   "features": [
+    "share",
+    "margin",
+    "votes",
+    "passrate",
+    "spread",
+    "flaky",
+    "length"
+   ],
+   "weights": [
+    -2.9366,
+    2.6762,
+    -4.2228,
+    5.631,
+    -1.4981,
+    0.0,
+    3.821
+   ],
+   "bias": 1.1262
   }
  }
 }

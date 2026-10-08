@@ -32,7 +32,7 @@ def one_problem(job):
     if FOLD_WEIGHTS:
         checker.MODEL = FOLD_WEIGHTS[str(1 - problem.fold)]  # trained on the other half
     n = len(problem.samples)
-    ks = [k for k in KS if k <= n]
+    ks = [k for k in KS if k < n] + [n]  # the whole pool is the last point
     out = {"id": problem.id, "fold": problem.fold, "pass1": mean(problem.correct), "base": {}, "needle": {}}
     code = bool(problem.facts)
     if code:

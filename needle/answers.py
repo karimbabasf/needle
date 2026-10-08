@@ -133,6 +133,7 @@ def answer_of(text: str) -> tuple[str | None, bool]:
 
 
 _CALC = re.compile(r"<<([^<>=]+)=([^<>]+)>>")
+_LATEX = re.compile(r"\$\$.*?\$\$|\$[^$]*\$|\\\[.*?\\\]|\\\(.*?\\\)|\\begin\{(\w+\*?)\}.*?\\end\{\1\}", re.S)
 _INLINE = re.compile(
     r"(?<![\w.^/])(-?\d[\d,]*(?:\.\d+)?(?:\s*[-+*/×]\s*\d[\d,]*(?:\.\d+)?)+)\s*=\s*\$?(-?\d[\d,]*(?:\.\d+)?)(?![\d^/])"
 )
@@ -143,8 +144,9 @@ def slips(text: str) -> int:
     """How many plain arithmetic statements in the sample are wrong ('15 * 50 * 30 = 45000').
     A sample that gets its own arithmetic wrong is far less likely to be right."""
     statements = set()  # '15 * 50 = <<15*50=750>>750' says one thing twice: count it once
+    plain = _LATEX.sub(" ", text)  # LaTeX math is often symbolic and easy to misread: skip it
     for pattern in (_CALC, _INLINE):
-        for lhs, rhs in pattern.findall(text):
+        for lhs, rhs in pattern.findall(plain):
             statements.add((lhs.replace(",", "").replace("×", "*").replace(" ", ""), rhs.replace(",", "").strip()))
     wrong = 0
     for lhs, rhs in statements:
