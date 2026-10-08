@@ -76,6 +76,11 @@ def panel(ax, title, series, t, xlabel, zoom=False) -> None:
         ax.set_ylim(0, 1.02)
     ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0, decimals=0))
     ax.margins(x=0.02)
+    low, high = ax.get_xlim()
+    ticks = [t for t in (1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000) if low <= t <= high]
+    ax.set_xticks(ticks)
+    ax.xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:,.0f}"))
+    ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
 
 
 def answer_series(c, t):
@@ -152,7 +157,7 @@ def main() -> None:
             for ax, path in zip(axes, code):
                 c = summary.curves(path)
                 panel(ax, NAMES[c["config"]], code_series(c, t), t, "Samples per problem (mean, log scale)")
-                ax.set_ylim(0, max(0.5, max(y for _, y in c["coverage"]) * 1.1))
+                ax.set_ylim(0, max(y for _, y in c["coverage"]) * 1.15)
             save(fig, "code", theme, t)
         ladder = [RESULTS / f"ladder_{d}.json" for d in ("GSM8K", "MATH")]
         if all(p.exists() for p in ladder):
