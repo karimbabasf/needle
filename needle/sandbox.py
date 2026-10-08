@@ -1,9 +1,13 @@
-"""Run a Python program on stdin tests. No network, no writes outside a temp dir on macOS, hard timeouts."""
+"""Run a Python program on stdin tests, with hard timeouts and a CPU limit.
+
+On macOS, sandbox-exec also blocks the network and every write outside a temp dir. Programs can still
+read files, and elsewhere there is no sandbox at all: run untrusted code inside a container."""
 
 import hashlib
 import os
 import random
 import re
+import resource
 import shutil
 import signal
 import subprocess
@@ -17,6 +21,16 @@ _PROFILE = """(version 1)
 (allow file-write* (subpath "{tmp}") (literal "/dev/null") (literal "/dev/stdout") (literal "/dev/stderr"))
 """
 _SANDBOX = shutil.which("sandbox-exec") if sys.platform == "darwin" else None
+
+
+def _limits(timeout: float):
+    """CPU time everywhere, memory where the OS enforces it (Linux)."""
+    def apply():
+        cpu = int(timeout) + 1
+        resource.setrlimit(resource.RLIMIT_CPU, (cpu, cpu))
+        if sys.platform.startswith("linux"):
+            resource.setrlimit(resource.RLIMIT_AS, (2 << 30, 2 << 30))
+    return apply
 
 
 def code_of(sample: str) -> str:
@@ -37,7 +51,7 @@ def run(code: str, stdin: str, timeout: float = 2.0) -> tuple[str, str]:
     try:
         proc = subprocess.Popen(
             cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-            cwd=tmp, start_new_session=True, text=True,
+            cwd=tmp, start_new_session=True, text=True, preexec_fn=_limits(timeout),
         )
         try:
             out, _ = proc.communicate(stdin, timeout=timeout)

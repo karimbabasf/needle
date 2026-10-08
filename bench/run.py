@@ -6,6 +6,7 @@ the other half of the problems, so no number comes from a checker that saw that 
 """
 
 import argparse
+import hashlib
 import json
 import sys
 from multiprocessing import Pool
@@ -98,7 +99,8 @@ def main():
         jobs = [(p, args.seeds, args.scales) for p in problems]
         with Pool(args.workers, initializer=init, initargs=(weights,)) as pool:
             results = pool.map(one_problem, jobs, chunksize=1)
-        json.dump({"config": config, "seeds": args.seeds, "problems": results},
+        provenance = hashlib.sha256(open(args.weights, "rb").read()).hexdigest()[:16] if args.weights else "shipped"
+        json.dump({"config": config, "seeds": args.seeds, "weights": provenance, "problems": results},
                   open(Path(args.out) / f"{config}.json", "w"))
         print(f"{config}: {len(results)} problems", flush=True)
 

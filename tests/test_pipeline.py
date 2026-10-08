@@ -57,9 +57,40 @@ def test_budget_scales_spending():
     assert small.samples < large.samples
 
 
+def test_bad_inputs_fail_clearly():
+    import pytest
+    with pytest.raises(ValueError):
+        solve("q", [], cache=None)
+    with pytest.raises(ValueError):
+        solve(Task("q", kind="code"), cycle("print(1)"), cache=None)
+
+
+def test_a_sampler_that_returns_none_items_still_works():
+    r = solve("What is 1 + 1? Compute it.", lambda p, n: [None, "#### 2"] * (n // 2) + ["#### 2"] * (n % 2), cache=None)
+    assert r.answer == "2"
+
+
+def test_two_unnamed_samplers_never_share_cache_entries():
+    cache = Cache()
+    a = solve("What is 2 + 2? Compute it.", cycle("#### 4"), cache=cache)
+    b = solve("What is 2 + 2? Compute it.", cycle("#### 5"), cache=cache)
+    assert (a.answer, b.answer, b.cached) == ("4", "5", False)  # unnamed: never cached
+
+
+def test_two_runners_with_the_same_name_never_share_cache_entries():
+    cache = Cache()
+    passes = {"passed": True, "partial": 1, "fingerprint": "x", "flaky": False, "length": 1}
+    fails = {"passed": False, "partial": 0, "fingerprint": "", "flaky": False, "length": 1}
+    gen = cycle("print(1)")
+    first = solve(Task("Print one.", tests=lambda s: dict(passes)), gen, cache=cache)
+    second = solve(Task("Print one.", tests=lambda s: dict(fails)), gen, cache=cache)
+    assert "no_pass" not in first.flags and "no_pass" in second.flags and not second.cached
+
+
 def test_exact_repeat_comes_from_the_cache():
     cache = Cache()
     gen = cycle("#### 5")
+    gen.name = "m"
     first = solve("What is 2 + 3? Compute it.", gen, cache=cache)
     again = solve("What is 2 + 3? Compute it.", gen, cache=cache)
     assert again.cached and again.answer == first.answer

@@ -2,7 +2,8 @@
 
 answer: majority vote at fixed k, Adaptive-Consistency (Aggarwal et al. 2023), Early-Stopping
 Self-Consistency (Li et al. 2024), coverage (an oracle: right if any sample so far is right).
-code: random sample, public-test filter, filter + behaviour clustering (AlphaCode), coverage.
+code: public-test filter, filter + behaviour clustering (AlphaCode), coverage. (One random sample is
+coverage at k = 1.)
 """
 
 import random

@@ -34,6 +34,41 @@ Everything except step 4 is fixed rules, so the same samples always give the sam
 Measured by replaying the public samples behind [Large Language Monkeys](https://arxiv.org/abs/2407.21787), the paper in the CS329A lecture: Llama-3 8B and 70B, 10,000 samples per problem on GSM8K and MATH, and 1,000 per problem on CodeContests (public tests run here, hidden verdicts from the dataset). Every method sees the same sample orders, 20 shuffles per problem. The checker is trained on half the problems and scored on the other half, both ways round, so no number comes from a problem the checker saw.
 
 <!-- results:start -->
+**Answers** (no checker exists, so samples vote):
+
+| Problems, model | needle | Adaptive-Consistency, same samples | Majority vote, same samples | Majority vote, 10,000 samples |
+|---|---|---|---|---|
+| GSM8K, 8B | 87.6% with 12 samples | 87.1% | 85.3% | 88.2% |
+| GSM8K, 70B | 96.7% with 6 samples | 96.8% | 96.1% | 96.9% |
+| MATH, 8B | 41.3% with 49 samples | 41.6% | 40.8% | 43.7% |
+| MATH, 70B | 59.4% with 33 samples | 60.6% | 59.7% | 60.0% |
+
+**Code** (public tests are the checker, hidden tests decide right or wrong):
+
+| Problems, model | needle | Filter + cluster, same samples | Public-test filter, same samples | Right program in the pile, same samples |
+|---|---|---|---|---|
+| CodeContests, 8B | 12.0% with 786 samples | 11.9% | 11.2% | 16.2% |
+| CodeContests, 70B | 24.6% with 664 samples | 23.8% | 23.2% | 27.3% |
+
+**What the flags are worth** (budget 1):
+
+| Problems, model | Answers flagged | Right when not flagged | Right when flagged |
+|---|---|---|---|
+| GSM8K, 8B | 8.5% | 90.8% | 52.5% |
+| GSM8K, 70B | 2.0% | 97.2% | 70.0% |
+| MATH, 8B | 65.5% | 73.3% | 24.5% |
+| MATH, 70B | 39.8% | 80.4% | 27.6% |
+| CodeContests, 8B | 96.5% | 74.1% | 9.8% |
+| CodeContests, 70B | 86.5% | 74.4% | 16.9% |
+
+Checker AUROC on problems it never saw: answers 0.88 to 0.90, code 0.66 to 0.73.
+
+**Two models, cheapest first** (cost in 8B samples; one 70B sample costs 70/8):
+
+| Problems | needle, 8B then 70B | Moved up to 70B | 70B alone (Adaptive-Consistency) | 8B alone, best |
+|---|---|---|---|---|
+| GSM8K | 90.1% at cost 18 | 8.1% | 96.3% at cost 40 | 87.9% |
+| MATH | 56.6% at cost 299 | 64.9% | 57.1% at cost 58 | 42.7% |
 <!-- results:end -->
 
 <picture>

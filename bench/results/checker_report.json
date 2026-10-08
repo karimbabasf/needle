@@ -1,13 +1,13 @@
 {
  "answer trained on half 0": {
-  "rows": 26729,
-  "auroc": 0.8754,
-  "base rate": 0.5654
+  "rows": 26949,
+  "auroc": 0.8844,
+  "base rate": 0.5728
  },
  "answer trained on half 1": {
-  "rows": 23206,
-  "auroc": 0.8984,
-  "base rate": 0.5355
+  "rows": 23840,
+  "auroc": 0.8981,
+  "base rate": 0.5389
  },
  "code trained on half 0": {
   "rows": 11219,

@@ -38,7 +38,7 @@ class Run:
         """Ask the sampler for n more samples. Returns how many came back."""
         if n <= 0:
             return 0
-        new = list(self.generate(self.task.prompt, n))[:n]
+        new = ["" if s is None else str(s) for s in list(self.generate(self.task.prompt, n))[:n]]
         for sample in new:
             self.samples.append(sample)
             self.facts.append(self.fact(sample))

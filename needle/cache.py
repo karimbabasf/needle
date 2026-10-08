@@ -29,6 +29,12 @@ def similarity(a: tuple[int, ...], b: tuple[int, ...]) -> float:
     return sum(x == y for x, y in zip(a, b)) / len(a)
 
 
+def cacheable(task: Task, ladder: list) -> bool:
+    """Only things with a stable name can be recognised again: named samplers and test lists.
+    A function (an unnamed sampler, a custom runner, a checker) cannot, so those runs skip the cache."""
+    return all(getattr(g, "name", None) for g in ladder) and not callable(task.tests) and task.check is None
+
+
 class Cache:
     def __init__(self, path: str | None = None, near: float = 0.9):
         self.path = Path(path) if path else None
@@ -40,15 +46,14 @@ class Cache:
         if self.path and self.path.exists():
             for line in self.path.read_text().splitlines():
                 entry = json.loads(line)
-                self._store(entry["key"], entry["scope"], entry["result"], tuple(entry["signature"]))
+                self._store(entry["key"], entry["scope"], entry["result"], tuple(entry["signature"]),
+                            entry.get("level"))
 
     @staticmethod
     def key(task: Task, kind: str, model: str) -> tuple[str, str]:
         """(exact key, scope). Scope keeps near matches inside the same model and kind."""
-        tests = task.tests if isinstance(task.tests, list) else getattr(task.tests, "__qualname__", "")
-        check = getattr(task.check, "__qualname__", "")
         scope = f"{model}\x00{kind}"
-        raw = f"{scope}\x00{task.prompt}\x00{tests!r}\x00{check}"
+        raw = f"{scope}\x00{task.prompt}\x00{task.tests!r}"
         return hashlib.sha256(raw.encode()).hexdigest(), scope
 
     def get(self, task: Task, kind: str, model: str = "") -> tuple[Result | None, str | None]:
@@ -65,18 +70,21 @@ class Cache:
                 seen.add(other)
         return None, None
 
-    def put(self, task: Task, kind: str, model: str, result: Result) -> None:
+    def put(self, task: Task, kind: str, model: str, result: Result, level: str | None = None) -> None:
+        """Store a result. level: the level a near repeat should start from (the first model's),
+        when it differs from the result's own (the last model tried)."""
         key, scope = self.key(task, kind, model)
         sig = signature(task.prompt)
         data = asdict(result)
-        self._store(key, scope, data, sig)
+        self._store(key, scope, data, sig, level)
         if self.path:
             with open(self.path, "a") as f:
-                f.write(json.dumps({"key": key, "scope": scope, "result": data, "signature": sig}) + "\n")
+                f.write(json.dumps({"key": key, "scope": scope, "result": data, "signature": sig,
+                                    "level": level}) + "\n")
 
-    def _store(self, key: str, scope: str, result: dict, sig: tuple[int, ...]) -> None:
+    def _store(self, key: str, scope: str, result: dict, sig: tuple[int, ...], level: str | None = None) -> None:
         self.results[key] = result
-        self.levels[key] = result["level"]
+        self.levels[key] = level or result["level"]
         self.signatures[key] = sig
         for band in range(_BANDS):
             self.buckets.setdefault(self._band(scope, sig, band), []).append(key)

@@ -153,7 +153,10 @@ def slips(text: str) -> int:
         a, b = _evaluate(lhs), _evaluate(rhs)
         if a is not None and b is not None:
             x, y = Fraction(a), Fraction(b)
-            wrong += abs(x - y) > max(1, abs(y)) / 10000
+            decimals = len(rhs.split(".")[1]) if "." in rhs else 0
+            # '10 / 3 = 3.33' rounds correctly; '10 / 3 = 3' does not
+            allowed = Fraction(1, 2 * 10**decimals) if decimals else max(1, abs(y)) / 10000
+            wrong += abs(x - y) > allowed
     return wrong
 
 

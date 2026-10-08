@@ -14,7 +14,7 @@ class Replay:
     """Serve stored samples as if a model were writing them: one seeded shuffle, then in order.
     Runs dry when the pool is spent. `drawn` holds the original index of every sample served."""
 
-    def __init__(self, samples: list[str], seed: int = 0, name: str = "replay", cost: float = 1.0):
+    def __init__(self, samples: list[str], seed: int = 0, name: str | None = None, cost: float = 1.0):
         self.samples = samples
         self.order = list(range(len(samples)))
         random.Random(seed).shuffle(self.order)

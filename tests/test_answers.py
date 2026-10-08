@@ -38,6 +38,17 @@ def test_slips_counts_wrong_arithmetic_only():
     assert slips("20 * 35 * 50 = <<20*35*50=35000>>35000 and 6+1+7 = 14") == 0
 
 
+def test_correct_rounding_is_not_a_slip():
+    assert slips("so 10 / 3 = 3.33 each") == 0
+    assert slips("so 10 / 3 = 3.4 each") == 1
+    assert slips("so 10 / 3 = 3 each") == 1
+
+
+def test_latex_is_not_checked():
+    assert slips("so $2 + 3 = 6$ in latex") == 0
+    assert slips("plain 2 + 3 = 6 here") == 1
+
+
 def test_prompt_answers_finds_worked_examples():
     prompt = "Q: a?\nA: so #### 15\n\nQ: b?\nA: The final answer is 2.\n\nQ: the real question?\nA:"
     assert prompt_answers(prompt) == frozenset({"15", "2"})
