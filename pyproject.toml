@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Route every prompt to the sampling strategy that fits it, check the result, fix what looks off."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { file = "LICENSE" }
+license = { file = "LICENSE.md" }
 authors = [{ name = "Karim Baba" }]
 dependencies = []
 

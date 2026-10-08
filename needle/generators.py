@@ -5,6 +5,7 @@ import json
 import os
 import random
 import time
+import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
@@ -48,10 +49,15 @@ def openai_compatible(model: str, base_url: str | None = None, api_key: str | No
             try:
                 with urllib.request.urlopen(request, timeout=120) as response:
                     return json.load(response)["choices"][0]["message"]["content"] or ""
-            except OSError:
+            except urllib.error.HTTPError as e:
+                if e.code != 429 and e.code < 500:
+                    raise RuntimeError(f"{url} answered {e.code} {e.reason}") from None  # auth, credit, bad model
                 if attempt == 3:
                     raise
-                time.sleep(2**attempt)
+            except OSError:  # timeouts and dropped connections
+                if attempt == 3:
+                    raise
+            time.sleep(2**attempt)
         return ""
 
     def generate(prompt: str, n: int) -> list[str]:

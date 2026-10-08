@@ -93,9 +93,15 @@ def main():
         full[kind] = model_of(fit(X, y), kind)
     out = Path(__file__).parent / "results"
     out.mkdir(exist_ok=True)
-    json.dump(folds, open(out / "checker_folds.json", "w"), indent=1)
-    json.dump(report, open(out / "checker_report.json", "w"), indent=1)
-    json.dump(full, open(Path(__file__).parents[1] / "needle" / "checker.json", "w"), indent=2)
+    shipped = Path(__file__).parents[1] / "needle" / "checker.json"
+    # Kinds not trained this time keep their previous models.
+    for path, new in ((out / "checker_folds.json", folds), (out / "checker_report.json", report), (shipped, full)):
+        old = json.load(open(path)) if path.exists() else {}
+        if path.name == "checker_folds.json":
+            merged = {f: {**old.get(f, {}), **new[f]} for f in ("0", "1")}
+        else:
+            merged = {**old, **new}
+        json.dump(merged, open(path, "w"), indent=1 if path.parent == out else 2)
     print(json.dumps(report, indent=1))
 
 

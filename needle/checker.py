@@ -60,8 +60,10 @@ def confidence(run: Run) -> float:
         return 0.0
     if run.kind == "checked":
         return 1.0
-    if run.kind not in MODEL:
+    if run.kind == "open":
         return agreement(run, top.members[0])
+    if run.kind not in MODEL:  # no trained model for this kind: fall back to the vote share
+        return len(top.members) / sum(len(c.members) for c in cands)
     model = MODEL[run.kind]
     z = model["bias"] + sum(w * x for w, x in zip(model["weights"], features(run, cands)))
     return 1 / (1 + math.exp(-max(-30.0, min(30.0, z))))

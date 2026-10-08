@@ -19,6 +19,7 @@ CONFIGS = [
 ]
 CODE_CONTESTS_TREE = "https://huggingface.co/api/datasets/deepmind/code_contests/tree/main/data"
 CODE_CONTESTS_FILE = "https://huggingface.co/datasets/deepmind/code_contests/resolve/main/"
+FONTS = "https://raw.githubusercontent.com/vercel/geist-font/v1.7.2/packages/next/dist/fonts/geist-sans/"
 
 
 def fetch(url: str, dest: Path) -> None:
@@ -47,6 +48,10 @@ def main() -> None:
         fetch(CODE_CONTESTS_FILE + path, out / Path(path).name)
     for name in CONFIGS:
         fetch(f"{MONKEYS}{name}.json", out / f"{name}.json")
+    fonts = out.parent / "fonts"  # Geist, for the charts
+    fonts.mkdir(exist_ok=True)
+    for weight in ("Regular", "Medium", "SemiBold"):
+        fetch(f"{FONTS}Geist-{weight}.ttf", fonts / f"Geist-{weight}.ttf")
 
 
 if __name__ == "__main__":
